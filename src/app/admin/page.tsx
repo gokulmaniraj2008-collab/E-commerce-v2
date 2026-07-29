@@ -4,16 +4,23 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { formatINR } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminOverviewPage() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') redirect('/login');
 
-  const [userCount, sellerCount, productCount, orders] = await Promise.all([
-    prisma.user.count(),
-    prisma.user.count({ where: { role: 'SELLER' } }),
-    prisma.product.count({ where: { active: true } }),
-    prisma.order.findMany({ select: { total: true, status: true } }),
-  ]);
+  let userCount = 0, sellerCount = 0, productCount = 0, orders: any[] = [];
+  try {
+    [userCount, sellerCount, productCount, orders] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: 'SELLER' } }),
+      prisma.product.count({ where: { active: true } }),
+      prisma.order.findMany({ select: { total: true, status: true } }),
+    ]);
+  } catch {
+    // No database connected yet.
+  }
 
   const revenue = orders
     .filter((o) => o.status !== 'CANCELLED' && o.status !== 'RETURNED')
