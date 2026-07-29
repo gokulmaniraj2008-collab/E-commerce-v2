@@ -22,7 +22,7 @@ export default async function HomePage() {
   }
 
   const products = latest.map((p) => {
-    const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : null;
+    const avg = p.reviews.length ? p.reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / p.reviews.length : null;
     const { reviews, ...rest } = p;
     return { ...rest, avgRating: avg, reviewCount: p.reviews.length };
   });
