@@ -7,26 +7,38 @@ import AddToCartButton from '@/components/AddToCartButton';
 import ReviewForm from '@/components/ReviewForm';
 import ProductCard from '@/components/ProductCard';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await prisma.product.findUnique({
-    where: { id: params.id },
-    include: {
-      category: true,
-      seller: { select: { name: true } },
-      reviews: { include: { user: { select: { name: true } } }, orderBy: { createdAt: 'desc' } },
-    },
-  });
+  let product: any = null;
+  try {
+    product = await prisma.product.findUnique({
+      where: { id: params.id },
+      include: {
+        category: true,
+        seller: { select: { name: true } },
+        reviews: { include: { user: { select: { name: true } } }, orderBy: { createdAt: 'desc' } },
+      },
+    });
+  } catch {
+    // No database connected yet.
+  }
   if (!product || !product.active) notFound();
 
   const avgRating = product.reviews.length
     ? product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length
     : null;
 
-  const related = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id }, active: true },
-    take: 6,
-    include: { reviews: { select: { rating: true } } },
-  });
+  let related: any[] = [];
+  try {
+    related = await prisma.product.findMany({
+      where: { categoryId: product.categoryId, id: { not: product.id }, active: true },
+      take: 6,
+      include: { reviews: { select: { rating: true } } },
+    });
+  } catch {
+    // No database connected yet.
+  }
   const relatedWithRating = related.map((p) => {
     const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : null;
     const { reviews, ...rest } = p;
