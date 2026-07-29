@@ -5,14 +5,22 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { formatINR } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerOverviewPage() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'SELLER') redirect('/login');
 
-  const [productCount, orderItems] = await Promise.all([
-    prisma.product.count({ where: { sellerId: session.user.id, active: true } }),
-    prisma.orderItem.findMany({ where: { sellerId: session.user.id }, select: { price: true, quantity: true, order: { select: { status: true } } } }),
-  ]);
+  let productCount = 0;
+  let orderItems: any[] = [];
+  try {
+    [productCount, orderItems] = await Promise.all([
+      prisma.product.count({ where: { sellerId: session.user.id, active: true } }),
+      prisma.orderItem.findMany({ where: { sellerId: session.user.id }, select: { price: true, quantity: true, order: { select: { status: true } } } }),
+    ]);
+  } catch {
+    // No database connected yet.
+  }
 
   const revenue = orderItems
     .filter((i) => i.order.status !== 'CANCELLED' && i.order.status !== 'RETURNED')
