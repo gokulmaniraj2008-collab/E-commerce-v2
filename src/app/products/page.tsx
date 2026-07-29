@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
 import CategoryFilter from '@/components/CategoryFilter';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -20,17 +22,24 @@ export default async function ProductsPage({
     sort === 'price_desc' ? { price: 'desc' as const } :
     { createdAt: 'desc' as const };
 
-  const [categories, items, total] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: 'asc' } }),
-    prisma.product.findMany({
-      where,
-      orderBy,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      include: { reviews: { select: { rating: true } } },
-    }),
-    prisma.product.count({ where }),
-  ]);
+  let categories: any[] = [];
+  let items: any[] = [];
+  let total = 0;
+  try {
+    [categories, items, total] = await Promise.all([
+      prisma.category.findMany({ orderBy: { name: 'asc' } }),
+      prisma.product.findMany({
+        where,
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: { reviews: { select: { rating: true } } },
+      }),
+      prisma.product.count({ where }),
+    ]);
+  } catch {
+    // No database connected yet — render with empty state instead of crashing.
+  }
 
   const products = items.map((p) => {
     const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : null;
@@ -76,4 +85,4 @@ export default async function ProductsPage({
       </div>
     </div>
   );
-}
+                  }
