@@ -26,7 +26,8 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
   if (!product || !product.active) notFound();
 
   const avgRating = product.reviews.length
-    ? product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length
+    ? product.reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / product.reviews.length
+  
     : null;
 
   let related: any[] = [];
