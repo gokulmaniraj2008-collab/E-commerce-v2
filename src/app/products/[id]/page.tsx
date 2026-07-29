@@ -41,12 +41,12 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
     // No database connected yet.
   }
   const relatedWithRating = related.map((p) => {
-    const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : null;
+    
     const { reviews, ...rest } = p;
     return { ...rest, avgRating: avg, reviewCount: p.reviews.length };
   });
 
-  const off = discountPercent(product.price, product.mrp);
+const avg = p.reviews.length ? p.reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / p.reviews.length : null;  const off = discountPercent(product.price, product.mrp);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
