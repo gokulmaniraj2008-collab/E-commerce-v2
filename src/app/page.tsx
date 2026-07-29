@@ -2,16 +2,24 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
-  const [categories, latest] = await Promise.all([
-    prisma.category.findMany({ take: 8, orderBy: { name: 'asc' } }),
-    prisma.product.findMany({
-      where: { active: true },
-      take: 12,
-      orderBy: { createdAt: 'desc' },
-      include: { reviews: { select: { rating: true } } },
-    }),
-  ]);
+  let categories: any[] = [];
+  let latest: any[] = [];
+  try {
+    [categories, latest] = await Promise.all([
+      prisma.category.findMany({ take: 8, orderBy: { name: 'asc' } }),
+      prisma.product.findMany({
+        where: { active: true },
+        take: 12,
+        orderBy: { createdAt: 'desc' },
+        include: { reviews: { select: { rating: true } } },
+      }),
+    ]);
+  } catch {
+    // No database connected yet — render with empty state instead of crashing.
+  }
 
   const products = latest.map((p) => {
     const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : null;
