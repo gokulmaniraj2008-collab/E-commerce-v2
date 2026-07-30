@@ -10,6 +10,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin/products" className="pb-2 hover:text-accent2">Products</Link>
         <Link href="/admin/orders" className="pb-2 hover:text-accent2">Orders</Link>
         <Link href="/admin/users" className="pb-2 hover:text-accent2">Users</Link>
+        <Link href="/settings" className="pb-2 hover:text-accent2">Settings</Link>
       </nav>
       {children}
     </div>
