@@ -27,8 +27,9 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
   const avgRating = product.reviews.length
     ? product.reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / product.reviews.length
-  
     : null;
+
+  const off = discountPercent(product.price, product.mrp);
 
   let related: any[] = [];
   try {
@@ -40,13 +41,14 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
   } catch {
     // No database connected yet.
   }
-  const relatedWithRating = related.map((p) => {
-    
-    const { reviews, ...rest } = p;
-    return { ...rest, avgRating: avg, reviewCount: p.reviews.length };
-  });
 
-const avg = p.reviews.length ? p.reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / p.reviews.length : null;  const off = discountPercent(product.price, product.mrp);
+  const relatedWithRating = related.map((p) => {
+    const { reviews, ...rest } = p;
+    const avg = reviews.length
+      ? reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / reviews.length
+      : null;
+    return { ...rest, avgRating: avg, reviewCount: reviews.length };
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
