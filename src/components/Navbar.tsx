@@ -50,6 +50,7 @@ export default function Navbar() {
               <Link href="/wishlist" className="hover:text-accent">Wishlist</Link>
               <Link href="/orders" className="hover:text-accent">Orders</Link>
               <Link href="/cart" className="hover:text-accent">Cart</Link>
+              <Link href="/settings" className="hover:text-accent">Settings</Link>
               <button onClick={() => signOut({ callbackUrl: '/' })} className="hover:text-accent">
                 Sign out
               </button>
