@@ -9,6 +9,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
         <Link href="/seller" className="pb-2 hover:text-accent2">Overview</Link>
         <Link href="/seller/products" className="pb-2 hover:text-accent2">Products</Link>
         <Link href="/seller/orders" className="pb-2 hover:text-accent2">Orders</Link>
+        <Link href="/settings" className="pb-2 hover:text-accent2">Settings</Link>
       </nav>
       {children}
     </div>
