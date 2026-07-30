@@ -102,7 +102,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
             {product.reviews.length === 0 ? (
               <p className="text-sm text-ink/50">No reviews yet — be the first to share your experience.</p>
             ) : (
-              product.reviews.map((r) => (
+              product.reviews.map((r: { id: string; rating: number; title: string | null; body: string; user: { name: string } }) => (
                 <div key={r.id} className="border-b border-line pb-4">
                   <div className="flex items-center gap-2 mb-1">
                     <StarRating rating={r.rating} />
